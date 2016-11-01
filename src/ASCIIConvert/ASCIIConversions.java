@@ -15,22 +15,33 @@ class ASCIIConversions {
     private long dStart;
     private long dEnd;
 
-    // The bread and butter of this program
+    /**
+     * The main conversion method.
+     * @param image A BufferedImage containing the image that needs to be converted
+     * @param inverse When inverse is true, all pixel values will be inverted. Thus creating a negative image
+     * @return A string containing the ASCII version of the original image.
+     */
     String convert(BufferedImage image, boolean inverse) {
+        // Reset statistics before anything
+        statsArray = new int[12];
         // Begin the timer
         dStart = System.nanoTime();
         // Scale the image
-        image = scale(image, image.getType(), image.getWidth(), image.getHeight() / 2, 1, 0.5);
+        image = scale(image, image.getWidth(), image.getHeight() / 2, 1, 0.5);
+        // The +1 is for the newline characters
         StringBuilder sb = new StringBuilder((image.getWidth() + 1) * image.getHeight());
+
         for (int y = 0; y < image.getHeight(); y++) {
+            // At the end of each line, add a newline character
             if (sb.length() != 0) sb.append("\n");
             for (int x = 0; x < image.getWidth(); x++) {
+                //
                 Color pixelColor = new Color(image.getRGB(x, y));
                 pixelColor = inverse ? new Color(255 - pixelColor.getRed(),
                         255 - pixelColor.getGreen(),
                         255 - pixelColor.getBlue()) : pixelColor;
                 double gValue = (double) pixelColor.getRed() * 0.2989 + (double) pixelColor.getBlue() * 0.5870 + (double) pixelColor.getGreen() * 0.1140;
-                final char s = isDark(gValue) ? darkGrayScaleMap(gValue) : lightGrayScaleMap(gValue);
+                final char s = gValue < 130 ? darkGrayScaleMap(gValue) : lightGrayScaleMap(gValue);
                 sb.append(s);
             }
         }
@@ -60,7 +71,7 @@ class ASCIIConversions {
             }
         }
         s += "Most used character: " + "'" + convRefArray[maxloc] + "'" + " was used " + numberFormat.format(max) + " times\n";
-        s += "Least used character: " + "'" + convRefArray[minloc] + "'" + " was used " + numberFormat.format(min) + "times \n";
+        s += "Least used character: " + "'" + convRefArray[minloc] + "'" + " was used " + numberFormat.format(min) + " times \n";
         return s;
     }
 
@@ -70,19 +81,26 @@ class ASCIIConversions {
     }
 
 
-    private static BufferedImage scale(BufferedImage sbi, int imageType, int dWidth, int dHeight, double fWidth, double fHeight) {
+    /**
+     * Image scale method
+     * @param imageToScale The image to be scaled
+     * @param dWidth Desired width, the new image object is created to this size
+     * @param dHeight Desired height, the new image object is created to this size
+     * @param fWidth What to multiply the width by. value < 1 scales down, and value > one scales up
+     * @param fHeight What to multiply the height by. value < 1 scales down, and value > one scales up
+     * @return A scaled image
+     */
+    private static BufferedImage scale(BufferedImage imageToScale, int dWidth, int dHeight, double fWidth, double fHeight) {
         BufferedImage dbi = null;
-        if (sbi != null) {
+        // Needed to create a new BufferedImage object
+        int imageType = imageToScale.getType();
+        if (imageToScale != null) {
             dbi = new BufferedImage(dWidth, dHeight, imageType);
             Graphics2D g = dbi.createGraphics();
             AffineTransform at = AffineTransform.getScaleInstance(fWidth, fHeight);
-            g.drawRenderedImage(sbi, at);
+            g.drawRenderedImage(imageToScale, at);
         }
         return dbi;
-    }
-
-    private boolean isDark(double g) {
-        return g < 130;
     }
 
     private char darkGrayScaleMap(double g) {
@@ -131,6 +149,6 @@ class ASCIIConversions {
             str = '%';
             statsArray[5]++;
         }
-        return str; // return the character
+        return str;
     }
 }

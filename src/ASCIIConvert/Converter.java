@@ -1,6 +1,5 @@
 package ASCIIConvert;
 
-//TODO: Clean up import statements
 import javafx.application.Application;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Orientation;
@@ -80,8 +79,7 @@ public class Converter extends Application {
 
         Button bStats = new Button("Show Statistics");
         bStats.setOnAction(e -> {
-            Locale locale = new Locale("en", "EN");
-            NumberFormat numberFormat = NumberFormat.getInstance(locale);
+            NumberFormat numberFormat = NumberFormat.getInstance(new Locale("en", "EN"));
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setResizable(true);
             alert.setTitle("Conversion Output");
@@ -100,11 +98,12 @@ public class Converter extends Application {
 
         Scene scene = new Scene(vb, image.getWidth(), image.getHeight());
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Dickens-O-Matic 3000 Super Ultra");
+        primaryStage.setTitle("ASCII Converter");
         primaryStage.show();
     }
 
     private void launchHighLightDialog(Stage s) {
+        // For the new window
         final Stage dialog = new Stage();
         dialog.setTitle("Choose Highlight Options");
         dialog.initModality(Modality.APPLICATION_MODAL);
@@ -113,11 +112,16 @@ public class Converter extends Application {
         GridPane dialogRoot = new GridPane();
         dialogRoot.setHgap(10);
         dialogRoot.setVgap(10);
+
+        // This is just all the labels with each character
         Label[] refSel = new Label[convert.convRefArray.length];
         for(int i = 0; i < convert.convRefArray.length; i++) {
+            // convert.convRefArray is an array that contains every single
+            // character that can be used to convert
             refSel[i] = new Label("Character: " + convert.convRefArray[i]);
         }
 
+        // Now for all the ColorPickers
         ColorPicker cb[] = new ColorPicker[convert.convRefArray.length];
         for (int i = 0; i < convert.convRefArray.length; i++) {
             cb[i] = new ColorPicker();
@@ -129,9 +133,12 @@ public class Converter extends Application {
                     (float) cb[finalI].getValue().getOpacity())));
             dialogRoot.add(cb[i], 1, i);
         }
+
+        // Now to add all the stuff
         for (int i = 0; i < convert.convRefArray.length; i++) {
             dialogRoot.add(refSel[i], 0, i);
         }
+
         Button bClear = new Button("Clear All");
         bClear.setOnAction(e -> removeHighlight());
 
@@ -180,7 +187,7 @@ public class Converter extends Application {
             jtextArea = new JTextArea(image.getHeight() / 2, image.getWidth());
             jtextArea.setText(convert.convert(image, invert));
             jtextArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, fontSize));
-            jtextArea.setEditable(true);
+            jtextArea.setEditable(false);
             sp = new JScrollPane(jtextArea);
             sp.getViewport().addChangeListener(l -> scrollP = sp.getViewport().getViewPosition());
             swingNode.setContent(sp);
