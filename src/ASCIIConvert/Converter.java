@@ -187,7 +187,7 @@ public class Converter extends Application {
             jtextArea = new JTextArea(image.getHeight() / 2, image.getWidth());
             jtextArea.setText(convert.convert(image, invert));
             jtextArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.BOLD, fontSize));
-            jtextArea.setEditable(false);
+            jtextArea.setEditable(true);
             sp = new JScrollPane(jtextArea);
             sp.getViewport().addChangeListener(l -> scrollP = sp.getViewport().getViewPosition());
             swingNode.setContent(sp);
